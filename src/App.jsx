@@ -92,7 +92,7 @@ export default function App() {
 
   if(submitted) return (
     <div style={S.wrap}>
-      <div style={S.hd}><p style={S.cn}>ツー矯正歯科室</p><h1 style={S.h1}>契約前フォーム</h1></div>
+      <div style={S.hd}><p style={S.cn}>カーツー矯正歯科室</p><h1 style={S.h1}>契約前フォーム</h1></div>
       <div style={S.card}>
         <div style={S.done}>
           <div style={S.dkIcon}>✓</div>
@@ -112,7 +112,7 @@ export default function App() {
   return (
     <div style={S.wrap}>
       <div style={S.hd}>
-        <p style={S.cn}>ツー矯正歯科室</p>
+        <p style={S.cn}>カーツー矯正歯科室</p>
         <h1 style={S.h1}>契約前フォーム</h1>
         <p style={S.sb}>契約来院日の3日前までにご送信ください</p>
       </div>
