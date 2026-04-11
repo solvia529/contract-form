@@ -241,10 +241,10 @@ export default function App() {
 const G='#2BAE8E',GD='#1d8a70';
 const S={
   wrap:{maxWidth:400,margin:'0 auto',padding:16,fontFamily:"'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif"},
-  hd:{background:G,borderRadius:'14px 14px 0 0',padding:'20px 20px 16px',textAlign:'center'},
-  cn:{color:'rgba(255,255,255,.75)',fontSize:11,letterSpacing:2,marginBottom:3},
-  h1:{color:'#fff',fontSize:19,fontWeight:500,marginBottom:2},
-  sb:{color:'rgba(255,255,255,.8)',fontSize:12},
+  hd:{background:G,borderRadius:'14px 14px 0 0',padding:'28px 20px 24px',textAlign:'center'},
+  cn:{color:'rgba(255,255,255,.85)',fontSize:13,letterSpacing:2,marginBottom:6,fontWeight:500},
+  h1:{color:'#fff',fontSize:24,fontWeight:700,marginBottom:6},
+  sb:{color:'rgba(255,255,255,.85)',fontSize:13},
   card:{background:'var(--color-background-primary)',border:'0.5px solid var(--color-border-tertiary)',borderRadius:'0 0 14px 14px'},
   steps:{display:'flex',padding:'12px 6px',borderBottom:'0.5px solid var(--color-border-tertiary)'},
   si:{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:3},
