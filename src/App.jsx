@@ -98,7 +98,7 @@ export default function App() {
           <div style={S.dkIcon}>✓</div>
           <p style={S.dkTitle}>送信完了</p>
           <p style={S.dkSub}>ご入力ありがとうございます。<br/>内容を確認し、当日スムーズにご案内いたします。</p>
-          <div style={S.moti}><span style={{fontSize:20}}>🪥</span><div><div style={S.motiT}>次回来院時の持ち物</div><div style={S.motiS}>歯ブラシをお持ちください</div></div></div>
+          <div style={S.moti}><div><div style={S.motiT}>次回来院時の持ち物</div><div style={S.motiS}>歯ブラシをお持ちください</div></div></div>
           <div style={S.dr}>
             {[['お名前',nm],['契約来院日',vd?fmtDate(new Date(vd)):''],['プラン',PL[pl]?.label||''],['支払い',py+(py==='院内分割'?`（${ins}回）`:'')],['振込',tr],['送信日時',new Date().toLocaleString('ja-JP')]].map(([k,v])=>(
               <p key={k} style={{fontSize:12,marginBottom:5,color:'var(--color-text-primary)'}}><span style={{color:'var(--color-text-tertiary)',marginRight:6}}>{k}</span>{v}</p>
@@ -285,8 +285,8 @@ const S={
   dkIcon:{width:52,height:52,borderRadius:'50%',background:G,lineHeight:'52px',fontSize:22,color:'#fff',margin:'0 auto 12px'},
   dkTitle:{fontSize:19,fontWeight:500,color:GD,marginBottom:8},
   dkSub:{fontSize:13,color:'var(--color-text-secondary)',lineHeight:1.7,marginBottom:0},
-  moti:{background:'#edfaf5',border:'0.5px solid #b8e8d8',borderRadius:8,padding:'11px 14px',marginTop:16,display:'flex',alignItems:'center',gap:10},
+  moti:{background:'#edfaf5',border:'0.5px solid #b8e8d8',borderRadius:8,padding:'14px',marginTop:16,display:'flex',flexDirection:'column',alignItems:'center',gap:6,textAlign:'center'},
   motiT:{fontSize:13,color:'#1d6a50',fontWeight:500},
-  motiS:{fontSize:11,color:G,marginTop:2},
+  motiS:{fontSize:11,color:'#2BAE8E',marginTop:0},
   dr:{background:'var(--color-background-secondary)',borderRadius:8,padding:'12px 14px',textAlign:'left',marginTop:14},
 };
