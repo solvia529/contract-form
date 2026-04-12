@@ -78,7 +78,7 @@ export default function App() {
   const canNext=()=>{
     if(stp===0) return pl!=='';
     if(stp===1){if(!py)return false;if(py==='院内分割'&&!ins)return false;return true;}
-    if(stp===2) return tr!=='';
+    if(stp===2) return py==='デンタルローン'||tr!=='';
     if(stp===3) return chk.every(Boolean);
     return true;
   };
@@ -197,6 +197,7 @@ export default function App() {
               </button>
             ))}
             {tr&&<p style={{fontSize:12,color:nextDay?'#8a5a00':'#cc0000',textAlign:'center',marginTop:8,fontWeight:500,lineHeight:1.6}}>振込・振込明細のLINE送付は{nextDay?'来院前':(dl||'3日前')}までにお願いします</p>}
+            {py==='デンタルローン'&&<div style={{background:'#fff0f0',border:'0.5px solid #ffb0b0',borderRadius:8,padding:'12px 14px',marginTop:8}}><p style={{color:'#cc0000',fontSize:13,fontWeight:500,lineHeight:1.6}}>エポスカードデンタルローンのお申し込みを来院日までに完了してください。</p></div>}
             <div style={S.furiNote}><p style={{fontSize:12,color:'var(--color-text-secondary)',lineHeight:1.65}}>※お振込の際は、治療を受ける方のお名前でお振込ください</p></div>
           </>}
 
