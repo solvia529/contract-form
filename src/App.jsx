@@ -242,9 +242,8 @@ export default function App() {
             ?<button style={{...S.nb,opacity:canNext()?1:0.3}} onClick={handleNext}>次へ →</button>
             :<button style={{...S.nb,opacity:submitting?0.6:1}} disabled={submitting} onClick={async()=>{
                 setSubmitting(true);
-                const endpoint=import.meta.env.VITE_GAS_URL||'/api/submit';
                 try{
-                  const res=await fetch(endpoint,{
+                  const res=await fetch('/api/submit',{
                     method:'POST',
                     headers:{'Content-Type':'application/json'},
                     body:JSON.stringify({
