@@ -13,7 +13,6 @@ export default async function handler(req, res) {
     ? req.body
     : JSON.stringify(req.body);
 
-  console.log('Forwarding to GAS:', gasUrl.slice(0, 60) + '...');
   console.log('Payload:', payload);
 
   try {
@@ -24,17 +23,22 @@ export default async function handler(req, res) {
       redirect: 'follow',
     });
 
-    console.log('GAS response status:', response.status);
+    const responseText = await response.text();
+    console.log('GAS status:', response.status);
+    console.log('GAS body (first 200):', responseText.slice(0, 200));
 
-    // GAS は 200 か、リダイレクト後の 200 を返す
-    // 5xx 以外はすべて成功とみなす
-    if (response.status < 500) {
+    if (response.status === 200) {
       return res.status(200).json({ ok: true });
     }
 
-    const text = await response.text();
-    console.error('GAS error body:', text);
-    throw new Error(`GAS responded with status ${response.status}`);
+    // 302 フォロー後に 200 以外が返った場合もエラーとして記録
+    console.error(`GAS unexpected status: ${response.status}`);
+    return res.status(502).json({
+      error: `GAS responded with ${response.status}`,
+      hint: response.status === 405
+        ? 'GAS Web App may not be deployed or access is restricted'
+        : 'Check GAS deployment settings',
+    });
   } catch (err) {
     console.error('GAS forwarding error:', err.message);
     return res.status(500).json({ error: err.message });
