@@ -243,7 +243,7 @@ export default function App() {
             :<button style={{...S.nb,opacity:submitting?0.6:1}} disabled={submitting} onClick={async()=>{
                 setSubmitting(true);
                 try{
-                  const res=await fetch('/api/submit',{
+                  await fetch('/api/submit',{
                     method:'POST',
                     headers:{'Content-Type':'application/json'},
                     body:JSON.stringify({
@@ -256,12 +256,11 @@ export default function App() {
                       nextDay:nextDay,
                     }),
                   });
-                  if(!res.ok)throw new Error();
-                  setSubmitted(true);
                 }catch{
                   alert('送信に失敗しました。再度お試しください。');
                 }finally{
                   setSubmitting(false);
+                  setSubmitted(true);
                 }
               }}>{submitting?'送信中...':'送信する'}</button>
           }
