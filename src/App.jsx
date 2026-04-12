@@ -31,7 +31,6 @@ export default function App() {
   const [submitted,setSubmitted]=useState(false);
   const [nmError,setNmError]=useState(false);
   const [submitting,setSubmitting]=useState(false);
-  const [submitError,setSubmitError]=useState(false);
 
   const fmtDate=dt=>`${dt.getFullYear()}年${dt.getMonth()+1}月${dt.getDate()}日`;
   const deadlineStr=()=>{
@@ -242,32 +241,33 @@ export default function App() {
           {stp<STPS.length-1
             ?<button style={{...S.nb,opacity:canNext()?1:0.3}} onClick={handleNext}>次へ →</button>
             :<button style={{...S.nb,opacity:submitting?0.6:1}} disabled={submitting} onClick={async()=>{
-                setSubmitting(true);setSubmitError(false);
+                setSubmitting(true);
+                const endpoint=import.meta.env.VITE_GAS_URL||'/api/submit';
                 try{
-                  const res=await fetch('/api/submit',{
+                  const res=await fetch(endpoint,{
                     method:'POST',
                     headers:{'Content-Type':'application/json'},
                     body:JSON.stringify({
                       submittedAt:new Date().toLocaleString('ja-JP'),
                       name:nm,
-                      visitDate:vd?fmtDate(new Date(vd)):'',
-                      plan:PL[pl]?.label||'',
+                      visitDate:vd,
+                      plan:PL[pl].label,
                       payment:py+(py==='院内分割'?`（${ins}回）`:''),
-                      transfer:py==='デンタルローン'?'デンタルローン':tr,
+                      transfer:tr,
                       nextDay:nextDay,
                     }),
                   });
                   if(!res.ok)throw new Error();
                   setSubmitted(true);
                 }catch{
-                  setSubmitError(true);
+                  alert('送信に失敗しました。再度お試しください。');
                 }finally{
                   setSubmitting(false);
                 }
-              }}>{submitting?'送信中…':'送信する'}</button>
+              }}>{submitting?'送信中...':'送信する'}</button>
           }
         </div>
-        {submitError&&<p style={{fontSize:12,color:'#cc0000',textAlign:'center',padding:'0 16px 12px',margin:0}}>送信に失敗しました。時間をおいて再度お試しください。</p>}
+
       </div>
     </div>
   );
