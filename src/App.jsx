@@ -243,8 +243,9 @@ export default function App() {
             :<button style={{...S.nb,opacity:submitting?0.6:1}} disabled={submitting} onClick={async()=>{
                 setSubmitting(true);
                 try{
-                  await fetch('/api/submit',{
+                  await fetch('https://script.google.com/macros/s/AKfycbykiahAfnYdTKycSH6O0RpW6mfvTpUvJhTTunM-84zjyobreMPAmmtxhRQyc-UWZkke/exec',{
                     method:'POST',
+                    mode:'no-cors',
                     headers:{'Content-Type':'application/json'},
                     body:JSON.stringify({
                       submittedAt:new Date().toLocaleString('ja-JP'),
