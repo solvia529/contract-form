@@ -5,27 +5,38 @@ export default async function handler(req, res) {
 
   const gasUrl = process.env.GAS_URL;
   if (!gasUrl) {
+    console.error('GAS_URL is not set');
     return res.status(500).json({ error: 'GAS_URL is not configured' });
   }
 
+  const payload = typeof req.body === 'string'
+    ? req.body
+    : JSON.stringify(req.body);
+
+  console.log('Forwarding to GAS:', gasUrl.slice(0, 60) + '...');
+  console.log('Payload:', payload);
+
   try {
-    // GAS Web App は POST を受け取ると 302 リダイレクトを返す。
-    // redirect:'manual' で止め、302 も成功とみなす。
     const response = await fetch(gasUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(req.body),
-      redirect: 'manual',
+      body: payload,
+      redirect: 'follow',
     });
 
-    // 200 または 302 (GAS の正常レスポンス) を成功とする
-    if (response.status === 200 || response.status === 302) {
+    console.log('GAS response status:', response.status);
+
+    // GAS は 200 か、リダイレクト後の 200 を返す
+    // 5xx 以外はすべて成功とみなす
+    if (response.status < 500) {
       return res.status(200).json({ ok: true });
     }
 
+    const text = await response.text();
+    console.error('GAS error body:', text);
     throw new Error(`GAS responded with status ${response.status}`);
   } catch (err) {
-    console.error('GAS forwarding error:', err);
-    return res.status(500).json({ error: 'Failed to submit form data' });
+    console.error('GAS forwarding error:', err.message);
+    return res.status(500).json({ error: err.message });
   }
 }
