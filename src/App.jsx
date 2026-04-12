@@ -29,6 +29,7 @@ export default function App() {
   const [chk,setChk]=useState([false,false,false]);
   const [nextDay,setNextDay]=useState(false);
   const [submitted,setSubmitted]=useState(false);
+  const [nmError,setNmError]=useState(false);
 
   const fmtDate=dt=>`${dt.getFullYear()}年${dt.getMonth()+1}月${dt.getDate()}日`;
   const deadlineStr=()=>{
@@ -76,11 +77,16 @@ export default function App() {
   };
 
   const canNext=()=>{
-    if(stp===0) return pl!=='';
+    if(stp===0) return nm.trim()!==''&&pl!=='';
     if(stp===1){if(!py)return false;if(py==='院内分割'&&!ins)return false;return true;}
     if(stp===2) return py==='デンタルローン'||tr!=='';
     if(stp===3) return chk.every(Boolean);
     return true;
+  };
+  const handleNext=()=>{
+    if(stp===0&&nm.trim()===''){setNmError(true);return;}
+    setNmError(false);
+    setStp(s=>s+1);
   };
 
   const tgChk=i=>{
@@ -130,7 +136,7 @@ export default function App() {
         <div style={S.bd}>
           {/* Step 0 */}
           {stp===0&&<>
-            <div style={S.fl}><label style={S.lbl}>お名前</label><input style={S.inp} placeholder="例：山田 花子" value={nm} onChange={e=>setNm(e.target.value)}/></div>
+            <div style={S.fl}><label style={S.lbl}>お名前</label><input style={S.inp} placeholder="例：山田 花子" value={nm} onChange={e=>{setNm(e.target.value);if(e.target.value.trim()!=='')setNmError(false);}}/>{nmError&&<p style={{fontSize:12,color:'#cc0000',marginTop:4}}>お名前を入力してください</p>}</div>
             <div style={S.fl}><label style={S.lbl}>契約来院日</label><input type="date" style={S.inp} value={vd} onChange={e=>setVd(e.target.value)}/></div>
             <label style={{...S.ndtog,background:nextDay?'#fff8e8':'var(--color-background-secondary)',borderColor:nextDay?'#e8a000':'var(--color-border-tertiary)'}} onClick={()=>setNextDay(!nextDay)}>
               <input type="checkbox" checked={nextDay} onChange={()=>setNextDay(!nextDay)} style={{width:18,height:18,accentColor:'#e8a000',flexShrink:0}}/>
@@ -190,15 +196,17 @@ export default function App() {
                 </div>
               ))}
             </div>}
-            <span style={S.ol}>振込状況を選択してください</span>
-            {[['振込済','振込明細をLINEで送付済み'],['振込予定',nextDay?'来院前までに振込・LINEで振込明細を送付':(dl?dl+'までに振込します':'3日前までに振込します')]].map(([v,sub])=>(
-              <button key={v} style={{...S.opt,...(tr===v?S.optSel:{})}} onClick={()=>setTr(v)}>
-                <span style={S.om}>{v}</span><span style={S.os}>{sub}</span>
-              </button>
-            ))}
-            {tr&&<p style={{fontSize:12,color:nextDay?'#8a5a00':'#cc0000',textAlign:'center',marginTop:8,fontWeight:500,lineHeight:1.6}}>振込・振込明細のLINE送付は{nextDay?'来院前':(dl||'3日前')}までにお願いします</p>}
+            {py!=='デンタルローン'&&<>
+              <span style={S.ol}>振込状況を選択してください</span>
+              {[['振込済','振込明細をLINEで送付済み'],['振込予定',nextDay?'来院前までに振込・LINEで振込明細を送付':(dl?dl+'までに振込します':'3日前までに振込します')]].map(([v,sub])=>(
+                <button key={v} style={{...S.opt,...(tr===v?S.optSel:{})}} onClick={()=>setTr(v)}>
+                  <span style={S.om}>{v}</span><span style={S.os}>{sub}</span>
+                </button>
+              ))}
+              {tr&&<p style={{fontSize:12,color:nextDay?'#8a5a00':'#cc0000',textAlign:'center',marginTop:8,fontWeight:500,lineHeight:1.6}}>振込・振込明細のLINE送付は{nextDay?'来院前':(dl||'3日前')}までにお願いします</p>}
+              <div style={S.furiNote}><p style={{fontSize:12,color:'var(--color-text-secondary)',lineHeight:1.65}}>※お振込の際は、治療を受ける方のお名前でお振込ください</p></div>
+            </>}
             {py==='デンタルローン'&&<div style={{background:'#fff0f0',border:'0.5px solid #ffb0b0',borderRadius:8,padding:'12px 14px',marginTop:8}}><p style={{color:'#cc0000',fontSize:13,fontWeight:500,lineHeight:1.6}}>エポスカードデンタルローンのお申し込みを来院日までに完了してください。</p></div>}
-            <div style={S.furiNote}><p style={{fontSize:12,color:'var(--color-text-secondary)',lineHeight:1.65}}>※お振込の際は、治療を受ける方のお名前でお振込ください</p></div>
           </>}
 
           {/* Step 3 */}
@@ -230,7 +238,7 @@ export default function App() {
         <div style={S.nav}>
           {stp>0&&<button style={S.bb} onClick={()=>setStp(s=>s-1)}>← 戻る</button>}
           {stp<STPS.length-1
-            ?<button style={{...S.nb,opacity:canNext()?1:0.3}} disabled={!canNext()} onClick={()=>setStp(s=>s+1)}>次へ →</button>
+            ?<button style={{...S.nb,opacity:canNext()?1:0.3}} onClick={handleNext}>次へ →</button>
             :<button style={S.nb} onClick={()=>setSubmitted(true)}>送信する</button>
           }
         </div>
