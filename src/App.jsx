@@ -147,8 +147,19 @@ export default function App() {
             <div style={S.fl}><label style={S.lbl}>お名前</label><input style={S.inp} placeholder="例：山田 花子" value={nm} onChange={e=>{setNm(e.target.value);if(e.target.value.trim()!=='')setNmError(false);}}/>{nmError&&<p style={{fontSize:12,color:'#cc0000',marginTop:4}}>お名前を入力してください</p>}</div>
             <div style={S.fl}>
               <label style={S.lbl}>契約来院日<span style={{color:'#cc0000',marginLeft:4,fontSize:11}}>※必須</span></label>
-              <input type="date" style={{...S.inp,...(vdError?{border:'1.5px solid #cc0000'}:{})}} value={vd} min={today} onChange={e=>{setVd(e.target.value);if(e.target.value!=='')setVdError(false);}}/>
-              {vdError&&<p style={{fontSize:12,color:'#cc0000',marginTop:4}}>来院日を選択してください</p>}
+              <label style={{display:'block',position:'relative',cursor:'pointer'}}>
+                <input type="date" value={vd} min={today}
+                  onChange={e=>{setVd(e.target.value);if(e.target.value!=='')setVdError(false);}}
+                  style={{position:'absolute',inset:0,opacity:0,width:'100%',height:'100%',cursor:'pointer',zIndex:1}}/>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 13px',borderRadius:8,border:vdError?'1.5px solid #cc0000':'1px solid #2BAE8E',background:'#edfaf5',fontSize:14,color:vd?'var(--color-text-primary)':'var(--color-text-tertiary)',boxSizing:'border-box'}}>
+                  <span>{vd?fmtDate(new Date(vd)):'来院日を選択'}</span>
+                  <span style={{fontSize:18}}>📅</span>
+                </div>
+              </label>
+              {vdError
+                ?<p style={{fontSize:12,color:'#cc0000',marginTop:4}}>来院日を選択してください</p>
+                :<p style={{fontSize:11,color:'var(--color-text-tertiary)',marginTop:4}}>▼ タップして来院日を選択してください</p>
+              }
             </div>
             <label style={{...S.ndtog,background:nextDay?'#fff8e8':'var(--color-background-secondary)',borderColor:nextDay?'#e8a000':'var(--color-border-tertiary)'}} onClick={()=>setNextDay(!nextDay)}>
               <input type="checkbox" checked={nextDay} onChange={()=>setNextDay(!nextDay)} style={{width:18,height:18,accentColor:'#e8a000',flexShrink:0}}/>
