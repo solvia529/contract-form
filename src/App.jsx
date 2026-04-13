@@ -1,13 +1,17 @@
 import { useState } from "react";
 
 const PL={
-  a:{base:660000,label:'2期治療（21歳以下）'},
-  b:{base:715000,label:'2期治療（21歳以下・透明ブラケット）'},
+  a:{base:660000,label:'2期治療（20歳以下）'},
+  b:{base:715000,label:'2期治療（20歳以下・透明ブラケット）'},
   c:{base:715000,label:'2期治療（21歳以上）'},
   d:{base:770000,label:'2期治療（21歳以上・透明ブラケット）'},
-  e:{base:330000,label:'1期治療'}
+  e:{base:330000,label:'1期治療'},
+  f:{base:330000,label:'2期治療 移行（20歳以下）'},
+  g:{base:385000,label:'2期治療 移行（20歳以下・透明ブラケット）'},
+  h:{base:385000,label:'2期治療 移行（21歳以上）'},
+  i:{base:440000,label:'2期治療 移行（21歳以上・透明ブラケット）'},
 };
-const INST={a:[3,6,12],b:[3,6,12],c:[3,6,12],d:[3,6,12],e:[3,6]};
+const INST={a:[3,6,12],b:[3,6,12],c:[3,6,12],d:[3,6,12],e:[3,6],f:[3,6,12],g:[3,6,12],h:[3,6,12],i:[3,6,12]};
 const HAND=55000;
 const STPS=['治療プラン','支払い方法','振込状況','同意書','確認'];
 const CST=[
@@ -30,7 +34,9 @@ export default function App() {
   const [nextDay,setNextDay]=useState(false);
   const [submitted,setSubmitted]=useState(false);
   const [nmError,setNmError]=useState(false);
+  const [vdError,setVdError]=useState(false);
   const [submitting,setSubmitting]=useState(false);
+  const today=new Date().toISOString().split('T')[0];
 
   const fmtDate=dt=>`${dt.getFullYear()}年${dt.getMonth()+1}月${dt.getDate()}日`;
   const deadlineStr=()=>{
@@ -51,7 +57,7 @@ export default function App() {
     const vy=visit.getFullYear(),vm=visit.getMonth()+1;
     const rows=[];
     const handDate=nextDay?'来院前まで':(deadlineStr()+'まで');
-    rows.push({label:'契約金',amount:'¥'+fmt(HAND),date:handDate,hl:true});
+    if(py!=='デンタルローン') rows.push({label:'契約金',amount:'¥'+fmt(HAND),date:handDate,hl:true});
     if(py==='院内分割'&&ins){
       const n=parseInt(ins);
       if(n===3){
@@ -78,7 +84,7 @@ export default function App() {
   };
 
   const canNext=()=>{
-    if(stp===0) return nm.trim()!==''&&pl!=='';
+    if(stp===0) return nm.trim()!==''&&vd!==''&&pl!=='';
     if(stp===1){if(!py)return false;if(py==='院内分割'&&!ins)return false;return true;}
     if(stp===2) return py==='デンタルローン'||tr!=='';
     if(stp===3) return chk.every(Boolean);
@@ -86,7 +92,8 @@ export default function App() {
   };
   const handleNext=()=>{
     if(stp===0&&nm.trim()===''){setNmError(true);return;}
-    setNmError(false);
+    if(stp===0&&vd===''){setVdError(true);return;}
+    setNmError(false);setVdError(false);
     setStp(s=>s+1);
   };
 
@@ -138,7 +145,11 @@ export default function App() {
           {/* Step 0 */}
           {stp===0&&<>
             <div style={S.fl}><label style={S.lbl}>お名前</label><input style={S.inp} placeholder="例：山田 花子" value={nm} onChange={e=>{setNm(e.target.value);if(e.target.value.trim()!=='')setNmError(false);}}/>{nmError&&<p style={{fontSize:12,color:'#cc0000',marginTop:4}}>お名前を入力してください</p>}</div>
-            <div style={S.fl}><label style={S.lbl}>契約来院日</label><input type="date" style={S.inp} value={vd} onChange={e=>setVd(e.target.value)}/></div>
+            <div style={S.fl}>
+              <label style={S.lbl}>契約来院日<span style={{color:'#cc0000',marginLeft:4,fontSize:11}}>※必須</span></label>
+              <input type="date" style={{...S.inp,...(vdError?{border:'1.5px solid #cc0000'}:{})}} value={vd} min={today} onChange={e=>{setVd(e.target.value);if(e.target.value!=='')setVdError(false);}}/>
+              {vdError&&<p style={{fontSize:12,color:'#cc0000',marginTop:4}}>来院日を選択してください</p>}
+            </div>
             <label style={{...S.ndtog,background:nextDay?'#fff8e8':'var(--color-background-secondary)',borderColor:nextDay?'#e8a000':'var(--color-border-tertiary)'}} onClick={()=>setNextDay(!nextDay)}>
               <input type="checkbox" checked={nextDay} onChange={()=>setNextDay(!nextDay)} style={{width:18,height:18,accentColor:'#e8a000',flexShrink:0}}/>
               <div><div style={{fontSize:13,color:'var(--color-text-primary)',fontWeight:500}}>次回のご来院はカウンセリングから3日以内ですか？</div><div style={{fontSize:11,color:'var(--color-text-secondary)',marginTop:2}}>該当する場合はチェックしてください</div></div>
@@ -147,11 +158,18 @@ export default function App() {
               ?<div style={S.dlFlex}><p style={{fontSize:12,color:'#8a5a00',fontWeight:500}}>来院前までにフォーム送信・振込をお願いします</p></div>
               :<div style={S.dlBox}><p style={{fontSize:12,color:'#cc0000',fontWeight:500}}>フォーム提出・振込・振込明細の期限</p><div style={{fontSize:15,color:'#cc0000',fontWeight:700,marginTop:2}}>{dl}まで</div></div>
             )}
-            <span style={S.ol}>治療プランを選択してください</span>
-            {Object.entries(PL).map(([k,v])=>(
+            <span style={S.olSec}>治療プランを選択してください</span>
+            {['a','b','c','d','e'].map(k=>(
               <button key={k} style={{...S.opt,...S.optRow,...(pl===k?S.optSel:{})}} onClick={()=>{setPl(k);setIns('');}}>
-                <span style={S.om}>{v.label}</span>
-                <span style={S.op}>¥{fmt(v.base)}<span style={{fontSize:10,color:'var(--color-text-tertiary)'}}> 税込</span></span>
+                <span style={S.om}>{PL[k].label}</span>
+                <span style={S.op}>¥{fmt(PL[k].base)}<span style={{fontSize:10,color:'var(--color-text-tertiary)'}}> 税込</span></span>
+              </button>
+            ))}
+            <span style={S.olSec}>2期治療移行プラン（1期治療修了の方）</span>
+            {['f','g','h','i'].map(k=>(
+              <button key={k} style={{...S.opt,...S.optRow,...(pl===k?S.optSel:{})}} onClick={()=>{setPl(k);setIns('');}}>
+                <span style={S.om}>{PL[k].label}</span>
+                <span style={S.op}>¥{fmt(PL[k].base)}<span style={{fontSize:10,color:'var(--color-text-tertiary)'}}> 税込</span></span>
               </button>
             ))}
           </>}
@@ -160,7 +178,7 @@ export default function App() {
           {stp===1&&<>
             {nextDay&&<div style={{marginBottom:10}}><span style={S.badge}>カウンセリングから3日以内来院</span></div>}
             <span style={S.ol}>お支払い方法を選択してください</span>
-            {[['一括','一括払い','全額一括'],['デンタルローン','デンタルローン',''],['院内分割','院内分割','手数料なし']].map(([v,m,sub])=>(
+            {[['一括','一括払い','全額一括'],['デンタルローン','デンタルローン',''],['院内分割','院内分割','']].map(([v,m,sub])=>(
               <button key={v} style={{...S.opt,...(py===v?S.optSel:{})}} onClick={()=>{setPy(v);setIns('');}}>
                 <span style={S.om}>{m}</span>{sub&&<span style={S.os}>{sub}</span>}
               </button>
@@ -243,19 +261,34 @@ export default function App() {
             :<button style={{...S.nb,opacity:submitting?0.6:1}} disabled={submitting} onClick={async()=>{
                 setSubmitting(true);
                 try{
-                  await fetch('https://script.google.com/macros/s/AKfycbykiahAfnYdTKycSH6O0RpW6mfvTpUvJhTTunM-84zjyobreMPAmmtxhRQyc-UWZkke/exec',{
+                  await fetch('https://script.google.com/macros/s/AKfycbxTf-VBKyqHIwzm2rH-SILfN0KQ4iMUYAfX0XoWKu_6t6MslcFUR63LwetGNuFWRw8S/exec',{
                     method:'POST',
                     mode:'no-cors',
                     headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({
-                      submittedAt:new Date().toLocaleString('ja-JP'),
-                      name:nm,
-                      visitDate:vd,
-                      plan:PL[pl].label,
-                      payment:py+(py==='院内分割'?`（${ins}回）`:''),
-                      transfer:tr,
-                      nextDay:nextDay,
-                    }),
+                    body:(()=>{
+                      const scRows=paySchedule();
+                      let scheduleStr='';
+                      if(py==='一括'){
+                        scheduleStr='一括払い';
+                      } else if(py==='デンタルローン'){
+                        scheduleStr='契約金：ローン含む・振込不要\nローン手続き：当日ご案内（契約来院日）';
+                      } else if(scRows){
+                        const lines=scRows.map(r=>`${r.label}：${r.amount}（${r.date}）`);
+                        scheduleStr=lines.join('\n')+'\n合計：¥'+fmt(PL[pl].base);
+                      }
+                      const fdl=(()=>{if(!vd)return'';const d=new Date(vd);d.setDate(d.getDate()-3);return`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;})();
+                      return JSON.stringify({
+                        submittedAt:new Date().toLocaleString('ja-JP'),
+                        name:nm,
+                        visitDate:vd,
+                        plan:PL[pl].label,
+                        payment:py+(py==='院内分割'?`（${ins}回）`:''),
+                        transfer:py==='デンタルローン'?'ローン含む・振込不要':tr,
+                        nextDay:nextDay,
+                        firstPaymentDeadline:fdl,
+                        schedule:scheduleStr,
+                      });
+                    })(),
                   });
                 }catch{
                   alert('送信に失敗しました。再度お試しください。');
@@ -289,6 +322,7 @@ const S={
   lbl:{display:'block',fontSize:12,color:'var(--color-text-secondary)',fontWeight:500,marginBottom:7},
   inp:{width:'100%',padding:'10px 12px',borderRadius:8,border:'0.5px solid var(--color-border-secondary)',fontSize:14,background:'var(--color-background-primary)',color:'var(--color-text-primary)',outline:'none',boxSizing:'border-box'},
   ol:{display:'block',fontSize:12,color:'var(--color-text-secondary)',fontWeight:500,marginBottom:7},
+  olSec:{display:'block',color:'#2C3E50',fontWeight:600,fontSize:13,letterSpacing:1,borderLeft:'2px solid #2BAE8E',paddingLeft:8,margin:'14px 0 8px'},
   ndtog:{display:'flex',alignItems:'center',gap:10,padding:'12px 14px',borderRadius:8,border:'0.5px solid',cursor:'pointer',marginBottom:14},
   dlBox:{background:'#fff0f0',border:'0.5px solid #ffb0b0',borderRadius:8,padding:'9px 13px',marginBottom:12,textAlign:'center'},
   dlFlex:{background:'#fff8e8',border:'0.5px solid #e8a000',borderRadius:8,padding:'9px 13px',marginBottom:12,textAlign:'center'},
