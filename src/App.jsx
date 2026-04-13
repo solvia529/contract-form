@@ -35,6 +35,7 @@ export default function App() {
   const [submitted,setSubmitted]=useState(false);
   const [nmError,setNmError]=useState(false);
   const [vdError,setVdError]=useState(false);
+  const [chkError,setChkError]=useState(false);
   const [submitting,setSubmitting]=useState(false);
   const today=new Date().toISOString().split('T')[0];
 
@@ -93,12 +94,14 @@ export default function App() {
   const handleNext=()=>{
     if(stp===0&&nm.trim()===''){setNmError(true);return;}
     if(stp===0&&vd===''){setVdError(true);return;}
-    setNmError(false);setVdError(false);
+    if(stp===3&&!chk.every(Boolean)){setChkError(true);return;}
+    setNmError(false);setVdError(false);setChkError(false);
     setStp(s=>s+1);
   };
 
   const tgChk=i=>{
     const c=[...chk];c[i]=!c[i];setChk(c);
+    if(c.every(Boolean))setChkError(false);
   };
 
   const dl=deadlineStr();
@@ -248,11 +251,12 @@ export default function App() {
             </a>
             <div style={S.cname}>以下の内容は <strong>{nm||'（お名前未入力）'}</strong> 本人が確認・同意します</div>
             {CST.map((c,i)=>(
-              <label key={i} style={{...S.ci,...(chk[i]?S.ciOk:{})}} onClick={()=>tgChk(i)}>
+              <label key={i} style={{...S.ci,...(chk[i]?S.ciOk:(chkError?{borderColor:'#cc0000',background:'#fff5f5'}:{}))}} onClick={()=>tgChk(i)}>
                 <input type="checkbox" checked={chk[i]} onChange={()=>tgChk(i)} style={{width:17,height:17,marginTop:1,flexShrink:0,accentColor:'#2BAE8E'}}/>
-                <span style={{fontSize:12,color:'var(--color-text-primary)',lineHeight:1.6}}>{c}</span>
+                <span style={{fontSize:12,color:(!chk[i]&&chkError)?'#cc0000':'var(--color-text-primary)',lineHeight:1.6}}>{c}</span>
               </label>
             ))}
+            {chkError&&<p style={{fontSize:12,color:'#cc0000',fontWeight:500,textAlign:'center',marginTop:6}}>すべての項目に同意してください</p>}
             <p style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'center',marginTop:10,lineHeight:1.5}}>※契約来院時にb-alignにて正式署名をいただきます</p>
           </>}
 
