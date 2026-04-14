@@ -36,6 +36,7 @@ export default function App() {
   const [nextDay,setNextDay]=useState(false);
   const [submitted,setSubmitted]=useState(false);
   const [em,setEm]=useState('');
+  const [trError,setTrError]=useState(false);
   const [nmError,setNmError]=useState(false);
   const [vdError,setVdError]=useState(false);
   const [emError,setEmError]=useState(false);
@@ -62,7 +63,7 @@ export default function App() {
     const vy=visit.getFullYear(),vm=visit.getMonth()+1;
     const rows=[];
     const handDate=nextDay?'来院前まで':(deadlineStr()+'まで');
-    if(py!=='デンタルローン') rows.push({label:'契約金',amount:'¥'+fmt(HAND),date:handDate,hl:true});
+    if(py==='院内分割') rows.push({label:'契約金',amount:'¥'+fmt(HAND),date:handDate,hl:true});
     if(py==='院内分割'&&ins){
       const n=parseInt(ins);
       if(n===3){
@@ -80,8 +81,7 @@ export default function App() {
         }
       }
     } else if(py==='一括'){
-      const mo=vm%12+1,yr=vm===12?vy+1:vy;
-      rows.push({label:'残額',amount:'¥'+fmt(PL[pl].base-HAND),date:eomLabel(yr,mo)});
+      rows.push({label:'一括',amount:'¥'+fmt(PL[pl].base),date:handDate,hl:true});
     } else if(py==='デンタルローン'){
       rows.push({label:'ローン手続き',amount:'当日ご案内',date:'契約来院日'});
     }
@@ -99,8 +99,9 @@ export default function App() {
     if(stp===0&&nm.trim()===''){setNmError(true);return;}
     if(stp===0&&vd===''){setVdError(true);return;}
     if(stp===0&&em.trim()===''){setEmError(true);return;}
+    if(stp===2&&py!=='デンタルローン'&&tr===''){setTrError(true);return;}
     if(stp===3&&!chk.every(Boolean)){setChkError(true);return;}
-    setNmError(false);setVdError(false);setEmError(false);setChkError(false);
+    setNmError(false);setVdError(false);setEmError(false);setTrError(false);setChkError(false);
     setStp(s=>s+1);
   };
 
@@ -240,11 +241,12 @@ export default function App() {
             {py!=='デンタルローン'&&<>
               <span style={S.ol}>振込状況を選択してください</span>
               {[['振込済','振込明細をLINEで送付済み'],['振込予定',nextDay?'来院前までに振込・LINEで振込明細を送付':(dl?dl+'までに振込します':'3日前までに振込します')]].map(([v,sub])=>(
-                <button key={v} style={{...S.opt,...(tr===v?S.optSel:{})}} onClick={()=>setTr(v)}>
+                <button key={v} style={{...S.opt,...(tr===v?S.optSel:{})}} onClick={()=>{setTr(v);setTrError(false);}}>
                   <span style={S.om}>{v}</span><span style={S.os}>{sub}</span>
                 </button>
               ))}
               {tr&&<p style={{fontSize:12,color:nextDay?'#8a5a00':'#cc0000',textAlign:'center',marginTop:8,fontWeight:500,lineHeight:1.6}}>振込・振込明細のLINE送付は{nextDay?'来院前':(dl||'3日前')}までにお願いします</p>}
+              {trError&&<p style={{fontSize:12,color:'#cc0000',fontWeight:500,textAlign:'center',marginTop:6}}>振込状況を選択してください</p>}
               <div style={S.furiNote}><p style={{fontSize:12,color:'var(--color-text-secondary)',lineHeight:1.65}}>※お振込の際は、治療を受ける方のお名前でお振込ください</p></div>
             </>}
             {py==='デンタルローン'&&<div style={{background:'#fff0f0',border:'0.5px solid #ffb0b0',borderRadius:8,padding:'12px 14px',marginTop:8}}><p style={{color:'#cc0000',fontSize:13,fontWeight:500,lineHeight:1.6}}>エポスカードデンタルローンのお申し込みを来院日までに完了してください。</p></div>}
