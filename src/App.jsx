@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 const PL={
   a:{base:660000,label:'2期治療（20歳以下）'},
@@ -42,12 +42,6 @@ export default function App() {
   const [chkError,setChkError]=useState(false);
   const [submitting,setSubmitting]=useState(false);
   const today=new Date().toISOString().split('T')[0];
-  const dateInputRef=useRef(null);
-  const openDatePicker=()=>{
-    if(!dateInputRef.current)return;
-    try{dateInputRef.current.showPicker();}
-    catch{dateInputRef.current.click();}
-  };
 
   const fmtDate=dt=>`${dt.getFullYear()}年${dt.getMonth()+1}月${dt.getDate()}日`;
   const deadlineStr=()=>{
@@ -166,15 +160,13 @@ export default function App() {
             </div>
             <div style={S.fl}>
               <label style={S.lbl}>契約来院日<span style={{color:'#cc0000',marginLeft:4,fontSize:11}}>※必須</span></label>
-              <div style={{position:'relative',cursor:'pointer'}} onClick={openDatePicker}>
-                <input ref={dateInputRef} type="date" value={vd} min={today}
+              <div style={{position:'relative'}}>
+                <input type="date" value={vd} min={today}
                   onChange={e=>{setVd(e.target.value);if(e.target.value!=='')setVdError(false);}}
-                  style={{position:'absolute',inset:0,opacity:0,width:'100%',height:'100%',cursor:'pointer',zIndex:1,pointerEvents:'none'}}/>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 13px',borderRadius:8,border:vdError?'1.5px solid #cc0000':'1px solid #2BAE8E',background:'#edfaf5',fontSize:14,color:vd?'var(--color-text-primary)':'var(--color-text-tertiary)',boxSizing:'border-box'}}>
-                  <span>{vd?fmtDate(new Date(vd)):'来院日を選択'}</span>
-                  <span style={{fontSize:18}}>📅</span>
-                </div>
+                  style={{width:'100%',padding:'11px 44px 11px 13px',borderRadius:8,border:vdError?'1.5px solid #cc0000':'1px solid #2BAE8E',background:'#edfaf5',fontSize:14,color:'var(--color-text-primary)',boxSizing:'border-box',cursor:'pointer',outline:'none'}}/>
+                <span style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',fontSize:18,pointerEvents:'none'}}>📅</span>
               </div>
+              {vd&&<p style={{fontSize:12,color:'#1d8a70',marginTop:4,marginBottom:0}}>{fmtDate(new Date(vd))}</p>}
               {vdError
                 ?<p style={{fontSize:12,color:'#cc0000',marginTop:4}}>来院日を選択してください</p>
                 :<p style={{fontSize:11,color:'var(--color-text-tertiary)',marginTop:4}}>▼ タップして来院日を選択してください</p>
