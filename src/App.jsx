@@ -174,7 +174,7 @@ export default function App() {
             </div>
             <label style={{...S.ndtog,background:nextDay?'#fff8e8':'var(--color-background-secondary)',borderColor:nextDay?'#e8a000':'var(--color-border-tertiary)'}} onClick={()=>setNextDay(!nextDay)}>
               <input type="checkbox" checked={nextDay} onChange={()=>setNextDay(!nextDay)} style={{width:18,height:18,accentColor:'#e8a000',flexShrink:0}}/>
-              <div><div style={{fontSize:13,color:'var(--color-text-primary)',fontWeight:500}}>次回のご来院はカウンセリングから3日以内ですか？</div><div style={{fontSize:11,color:'var(--color-text-secondary)',marginTop:2}}>該当する場合はチェックしてください</div></div>
+              <div><div style={{fontSize:13,color:'var(--color-text-primary)',fontWeight:500}}>次回のご来院はカウンセリングから<br/>3日以内ですか？</div><div style={{fontSize:11,color:'var(--color-text-secondary)',marginTop:2}}>該当する場合はチェックしてください</div></div>
             </label>
             {vd&&(nextDay
               ?<div style={S.dlFlex}><p style={{fontSize:12,color:'#8a5a00',fontWeight:500}}>来院前までにフォーム送信・振込をお願いします</p></div>
@@ -261,7 +261,7 @@ export default function App() {
             {CST.map((c,i)=>(
               <label key={i} style={{...S.ci,...(chk[i]?S.ciOk:(chkError?{borderColor:'#cc0000',background:'#fff5f5'}:{}))}} onClick={()=>tgChk(i)}>
                 <input type="checkbox" checked={chk[i]} onChange={()=>tgChk(i)} style={{width:17,height:17,marginTop:1,flexShrink:0,accentColor:'#2BAE8E'}}/>
-                <span style={{fontSize:12,color:(!chk[i]&&chkError)?'#cc0000':'var(--color-text-primary)',lineHeight:1.6,whiteSpace:'pre-line'}}>{c}</span>
+                <span style={{fontSize:12,color:(!chk[i]&&chkError)?'#cc0000':'var(--color-text-primary)',lineHeight:1.6,whiteSpace:'pre-line',textAlign:'left'}}>{c}</span>
               </label>
             ))}
             {chkError&&<p style={{fontSize:12,color:'#cc0000',fontWeight:500,textAlign:'center',marginTop:6}}>すべての項目に同意してください</p>}
