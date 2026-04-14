@@ -121,7 +121,7 @@ export default function App() {
           <div style={S.dkIcon}>✓</div>
           <p style={S.dkTitle}>送信完了</p>
           <p style={S.dkSub}>ご入力ありがとうございます。<br/>内容を確認し、当日スムーズにご案内いたします。</p>
-          <div style={S.moti}><span style={{fontSize:20}}>🪥</span><div><div style={S.motiT}>次回来院時の持ち物</div><div style={S.motiS}>歯ブラシをお持ちください</div><div style={S.motiS}>月次処置料：{pl==='e'?'¥3,300':'¥5,500'}（税込）</div></div></div>
+          <div style={S.moti}><span style={{fontSize:20}}>🪥</span><div><div style={S.motiT}>次回来院時の持ち物</div><div style={S.motiS}>歯ブラシ、処置料{pl==='e'?'¥3,300':'¥5,500'}（税込）をお持ちください<br/>（クレジットカードのご利用も可能です）</div></div></div>
           <div style={S.dr}>
             {[['お名前',nm],['契約来院日',vd?fmtDate(new Date(vd)):''],['プラン',PL[pl]?.label||''],['支払い',py+(py==='院内分割'?`（${ins}回）`:'')],['振込',tr],['送信日時',new Date().toLocaleString('ja-JP')]].map(([k,v])=>(
               <p key={k} style={{fontSize:12,marginBottom:5,color:'var(--color-text-primary)'}}><span style={{color:'var(--color-text-tertiary)',marginRight:6}}>{k}</span>{v}</p>
