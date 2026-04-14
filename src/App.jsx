@@ -245,7 +245,7 @@ export default function App() {
                   <span style={S.om}>{v}</span><span style={S.os}>{sub}</span>
                 </button>
               ))}
-              {tr&&<p style={{fontSize:12,color:nextDay?'#8a5a00':'#cc0000',textAlign:'center',marginTop:8,fontWeight:700,lineHeight:1.6,wordBreak:'keep-all',overflowWrap:'break-word'}}>振込・振込明細のLINE送付は{nextDay?'来院前':(dl||'3日前')}までにお願いします</p>}
+              {tr&&<p style={{fontSize:12,color:nextDay?'#8a5a00':'#cc0000',textAlign:'center',marginTop:8,fontWeight:700,lineHeight:1.6}}>振込・振込明細のLINE送付は{nextDay?'来院前':(dl||'3日前')}<br/>までにお願いします</p>}
               {trError&&<p style={{fontSize:12,color:'#cc0000',fontWeight:500,textAlign:'center',marginTop:6}}>振込状況を選択してください</p>}
               <div style={S.furiNote}><p style={{fontSize:12,color:'#ef4444',fontWeight:700,lineHeight:1.65}}>※お振込の際は、治療を受ける方のお名前でお振込ください</p></div>
             </>}
