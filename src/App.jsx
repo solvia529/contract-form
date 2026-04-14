@@ -286,7 +286,7 @@ export default function App() {
             <button style={{...S.nb,flex:1,opacity:submitting?0.6:1}} disabled={submitting} onClick={async()=>{
                 setSubmitting(true);
                 try{
-                  await fetch('https://script.google.com/macros/s/AKfycbxRmqMdWOjcUzb8VN9yHO_H71Hpe2IYLX6uaDh0UJCadSAR2JbQA2wQxuAi3qigj-yu/exec',{
+                  await fetch('https://script.google.com/macros/s/AKfycbxRmqMdWOjcUzb8VN9yHO_H71Hpe2lYLX6uaDh0UJCadSAR2JbQA2wQxuAi3qigj-yu/exec',{
                     method:'POST',
                     mode:'no-cors',
                     headers:{'Content-Type':'text/plain;charset=utf-8'},
