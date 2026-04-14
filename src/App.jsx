@@ -304,7 +304,7 @@ export default function App() {
                         scheduleStr=lines.join('\n')+'\n合計：¥'+fmt(PL[pl].base);
                       }
                       const fdl=(()=>{if(!vd)return'';const d=new Date(vd);d.setDate(d.getDate()-3);return`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;})();
-                      return JSON.stringify({
+                      const payload={
                         submittedAt:new Date().toLocaleString('ja-JP'),
                         name:nm,
                         email:em,
@@ -315,7 +315,9 @@ export default function App() {
                         nextDay:nextDay,
                         firstPaymentDeadline:fdl,
                         schedule:scheduleStr,
-                      });
+                      };
+                      console.log('[送信データ確認]', JSON.stringify(payload, null, 2));
+                      return JSON.stringify(payload);
                     })(),
                   });
                 }catch{
