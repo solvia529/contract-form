@@ -50,7 +50,7 @@ menu2 = {
     "areas": [
         {"bounds": {"x": 0,    "y": 0, "width": 833, "height": 843}, "action": {"type": "richmenuswitch", "richMenuAliasId": ALIAS_P1, "data": "switch_to_page1"}},
         {"bounds": {"x": 833,  "y": 0, "width": 834, "height": 843}, "action": {"type": "message", "label": "急患・当日キャンセル・遅刻", "text": "急患等"}},
-        {"bounds": {"x": 1667, "y": 0, "width": 833, "height": 843}, "action": {"type": "uri", "label": "契約前フォーム", "uri": "https://contract-form-kappa.vercel.app"}},
+        {"bounds": {"x": 1667, "y": 0, "width": 833, "height": 843}, "action": {"type": "uri", "label": "契約前フォーム", "uri": "https://contract-form-kappa.vercel.app?v=2"}},
     ]
 }
 
