@@ -22,7 +22,7 @@ const CST=[
   '治療前後の検査資料（口腔内写真・レントゲン写真等）が、治療履歴の分析目的で他の歯科医・矯正医に共有される場合や、症例供覧・学会発表等に使用される場合があることに同意します。',
 ];
 const fmt=n=>Math.round(n).toLocaleString('ja-JP');
-const DOC_URL='https://example.com/consent.pdf';
+const DOC_URL='https://drive.google.com/file/d/1byYn4xpSCVRDp-BC2Yo4FirZhCdN3nZL/view?usp=sharing';
 
 export default function App() {
   const [stp,setStp]=useState(0);
