@@ -15,9 +15,11 @@ const INST={a:[3,6,12],b:[3,6,12],c:[3,6,12],d:[3,6,12],e:[3,6],f:[3,6,12],g:[3,
 const HAND=55000;
 const STPS=['治療プラン','支払い方法','振込状況','同意書','確認'];
 const CST=[
-  '治療内容・料金について説明を受け、内容を十分に理解しました。',
-  '返金ポリシー（治療開始後の返金は原則不可）について理解しました。',
-  '治療に伴うリスク（後戻り・装置破損・治療期間延長等）について理解しました。'
+  '治療内容・料金について説明を受け、以下を含め十分に理解しました。\n\n・月次処置料（1期治療：¥3,300税込／2期治療：¥5,500税込）が毎回の来院時に発生します。\n・当日キャンセルおよび10分以上の遅刻は処置料100%のキャンセル料が発生します。\n・発熱・咳・のどの痛み等の症状がある場合も同様にキャンセル料が発生します。\n・交通機関の遅延・事故・忌引きの場合はキャンセル料の適用外となります。\n・体調不良・感染症の疑いがある場合は必ず前日までにキャンセルのご連絡をください。\n（当日のご連絡となった場合はキャンセル料100%が発生します。）',
+  '治療を中止される場合、設計料・技工外注費・材料費・事務手数料等が既に発生しているため、返金は最大でお支払い総額の50%となり、治療の進行状況によっては返金できない場合があることを理解しました。',
+  '当院は非抜歯・顎拡大を専門とする矯正治療を行っており、以下について理解しました。\n\n・顎の拡大に伴い、治療中に歯の間に隙間が生じる場合があります。\n・専用アライナーは拡大を目的とするため、歯への100%フィットを目的としておらず、痛み及び出血が生じる場合があります。\n・歯根吸収・歯肉退縮・歯髄壊死等のリスクが生じる可能性があります。\n・保定装置を指示通りに使用していただけない場合、後戻りが生じます。',
+  '正式な同意書への署名は契約来院日に行うことを理解しました。',
+  '治療前後の検査資料（口腔内写真・レントゲン写真等）が、治療履歴の分析目的で他の歯科医・矯正医に共有される場合や、症例供覧・学会発表等に使用される場合があることに同意します。',
 ];
 const fmt=n=>Math.round(n).toLocaleString('ja-JP');
 const DOC_URL='https://example.com/consent.pdf';
@@ -30,11 +32,13 @@ export default function App() {
   const [py,setPy]=useState('');
   const [ins,setIns]=useState('');
   const [tr,setTr]=useState('');
-  const [chk,setChk]=useState([false,false,false]);
+  const [chk,setChk]=useState([false,false,false,false,false]);
   const [nextDay,setNextDay]=useState(false);
   const [submitted,setSubmitted]=useState(false);
+  const [em,setEm]=useState('');
   const [nmError,setNmError]=useState(false);
   const [vdError,setVdError]=useState(false);
+  const [emError,setEmError]=useState(false);
   const [chkError,setChkError]=useState(false);
   const [submitting,setSubmitting]=useState(false);
   const today=new Date().toISOString().split('T')[0];
@@ -44,7 +48,7 @@ export default function App() {
     if(!vd) return null;
     const dl=new Date(vd);dl.setDate(dl.getDate()-3);return fmtDate(dl);
   };
-  const eomLabel=(y,m)=>`${y}年${m}月末日`;
+  const eomLabel=(y,m)=>`${y}年${m}月末まで`;
   const calc3=pk=>{
     const rem=PL[pk].base-HAND;
     const first=Math.floor(rem/2/5000)*5000;
@@ -85,7 +89,7 @@ export default function App() {
   };
 
   const canNext=()=>{
-    if(stp===0) return nm.trim()!==''&&vd!==''&&pl!=='';
+    if(stp===0) return nm.trim()!==''&&vd!==''&&em.trim()!==''&&pl!=='';
     if(stp===1){if(!py)return false;if(py==='院内分割'&&!ins)return false;return true;}
     if(stp===2) return py==='デンタルローン'||tr!=='';
     if(stp===3) return chk.every(Boolean);
@@ -94,8 +98,9 @@ export default function App() {
   const handleNext=()=>{
     if(stp===0&&nm.trim()===''){setNmError(true);return;}
     if(stp===0&&vd===''){setVdError(true);return;}
+    if(stp===0&&em.trim()===''){setEmError(true);return;}
     if(stp===3&&!chk.every(Boolean)){setChkError(true);return;}
-    setNmError(false);setVdError(false);setChkError(false);
+    setNmError(false);setVdError(false);setEmError(false);setChkError(false);
     setStp(s=>s+1);
   };
 
@@ -148,6 +153,11 @@ export default function App() {
           {/* Step 0 */}
           {stp===0&&<>
             <div style={S.fl}><label style={S.lbl}>お名前</label><input style={S.inp} placeholder="例：山田 花子" value={nm} onChange={e=>{setNm(e.target.value);if(e.target.value.trim()!=='')setNmError(false);}}/>{nmError&&<p style={{fontSize:12,color:'#cc0000',marginTop:4}}>お名前を入力してください</p>}</div>
+            <div style={S.fl}>
+              <label style={S.lbl}>メールアドレス（確認メール送付先）<span style={{color:'#cc0000',marginLeft:4,fontSize:11}}>※必須</span></label>
+              <input type="email" inputMode="email" style={{...S.inp,...(emError?{border:'1.5px solid #cc0000'}:{})}} placeholder="例：example@gmail.com" value={em} onChange={e=>{setEm(e.target.value);if(e.target.value.trim()!=='')setEmError(false);}}/>
+              {emError&&<p style={{fontSize:12,color:'#cc0000',marginTop:4}}>メールアドレスを入力してください</p>}
+            </div>
             <div style={S.fl}>
               <label style={S.lbl}>契約来院日<span style={{color:'#cc0000',marginLeft:4,fontSize:11}}>※必須</span></label>
               <label style={{display:'block',position:'relative',cursor:'pointer'}}>
@@ -253,7 +263,7 @@ export default function App() {
             {CST.map((c,i)=>(
               <label key={i} style={{...S.ci,...(chk[i]?S.ciOk:(chkError?{borderColor:'#cc0000',background:'#fff5f5'}:{}))}} onClick={()=>tgChk(i)}>
                 <input type="checkbox" checked={chk[i]} onChange={()=>tgChk(i)} style={{width:17,height:17,marginTop:1,flexShrink:0,accentColor:'#2BAE8E'}}/>
-                <span style={{fontSize:12,color:(!chk[i]&&chkError)?'#cc0000':'var(--color-text-primary)',lineHeight:1.6}}>{c}</span>
+                <span style={{fontSize:12,color:(!chk[i]&&chkError)?'#cc0000':'var(--color-text-primary)',lineHeight:1.6,whiteSpace:'pre-line'}}>{c}</span>
               </label>
             ))}
             {chkError&&<p style={{fontSize:12,color:'#cc0000',fontWeight:500,textAlign:'center',marginTop:6}}>すべての項目に同意してください</p>}
@@ -262,7 +272,7 @@ export default function App() {
 
           {/* Step 4 */}
           {stp===4&&<>
-            {[['お名前',nm],['契約来院日',vd?fmtDate(new Date(vd)):''],['提出期限',nextDay?'来院前まで':(dl?dl+'まで':'')],['治療プラン',PL[pl]?.label||''],['お支払い方法',py+(py==='院内分割'?`（${ins}回）`:'')],['振込状況',tr],['同意','3項目すべて確認済み']].map(([k,v])=>v?(
+            {[['お名前',nm],['メールアドレス',em],['契約来院日',vd?fmtDate(new Date(vd)):''],['提出期限',nextDay?'来院前まで':(dl?dl+'まで':'')],['治療プラン',PL[pl]?.label||''],['お支払い方法',py+(py==='院内分割'?`（${ins}回）`:'')],['振込状況',tr],['同意','5項目すべて確認済み']].map(([k,v])=>v?(
               <div key={k} style={S.crow}><span style={S.ck}>{k}</span><span style={S.cv}>{v}</span></div>
             ):null)}
           </>}
@@ -273,7 +283,9 @@ export default function App() {
           {stp>0&&<button style={S.bb} onClick={()=>setStp(s=>s-1)}>← 戻る</button>}
           {stp<STPS.length-1
             ?<button style={{...S.nb,opacity:canNext()?1:0.3}} onClick={handleNext}>次へ →</button>
-            :<button style={{...S.nb,opacity:submitting?0.6:1}} disabled={submitting} onClick={async()=>{
+            :<>
+            <p style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'center',marginBottom:8,lineHeight:1.6,padding:'0 4px'}}>上記5項目を確認の上、お名前を電子署名として送信します。</p>
+            <button style={{...S.nb,flex:1,opacity:submitting?0.6:1}} disabled={submitting} onClick={async()=>{
                 setSubmitting(true);
                 try{
                   await fetch('https://script.google.com/macros/s/AKfycbxTf-VBKyqHIwzm2rH-SILfN0KQ4iMUYAfX0XoWKu_6t6MslcFUR63LwetGNuFWRw8S/exec',{
@@ -295,6 +307,7 @@ export default function App() {
                       return JSON.stringify({
                         submittedAt:new Date().toLocaleString('ja-JP'),
                         name:nm,
+                        email:em,
                         visitDate:vd,
                         plan:PL[pl].label,
                         payment:py+(py==='院内分割'?`（${ins}回）`:''),
@@ -312,6 +325,7 @@ export default function App() {
                   setSubmitted(true);
                 }
               }}>{submitting?'送信中...':'送信する'}</button>
+            </>
           }
         </div>
 
