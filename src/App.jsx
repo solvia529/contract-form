@@ -297,7 +297,7 @@ export default function App() {
                   await fetch('https://script.google.com/macros/s/AKfycbxTf-VBKyqHIwzm2rH-SILfN0KQ4iMUYAfX0XoWKu_6t6MslcFUR63LwetGNuFWRw8S/exec',{
                     method:'POST',
                     mode:'no-cors',
-                    headers:{'Content-Type':'application/json'},
+                    headers:{'Content-Type':'text/plain'},
                     body:(()=>{
                       const scRows=paySchedule();
                       let scheduleStr='';
